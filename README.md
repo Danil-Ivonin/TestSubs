@@ -120,6 +120,59 @@ make docker-up
 make docker-down
 make migrate-up
 make migrate-down
+make load-test
+make load-test-local
+```
+
+## Нагрузочные тесты
+
+Нагрузочный тест написан на k6 и лежит в `tests/load/subscriptions.js`.
+
+Сценарий на каждой итерации выполняет:
+
+- `POST /api/v1/subscriptions`
+- `GET /api/v1/subscriptions/{id}`
+- `GET /api/v1/subscriptions`
+- `GET /api/v1/subscriptions/total`
+- `PUT /api/v1/subscriptions/{id}`
+- `DELETE /api/v1/subscriptions/{id}`
+
+Перед запуском поднимите сервис:
+
+```bash
+make docker-up
+```
+
+В другом терминале запустите нагрузочный тест через Docker-образ k6:
+
+```bash
+make load-test
+```
+
+По умолчанию используется `10` виртуальных пользователей в течение `1m`.
+
+Параметры можно переопределить:
+
+```bash
+make load-test VUS=50 DURATION=3m
+```
+
+Если API запущен не на `localhost:8080`, передайте другой адрес:
+
+```bash
+make load-test LOAD_BASE_URL=http://host.docker.internal:8081
+```
+
+Если k6 установлен локально, можно запускать без Docker:
+
+```bash
+make load-test-local
+```
+
+Для локального k6 адрес задается отдельно:
+
+```bash
+make load-test-local LOCAL_LOAD_BASE_URL=http://localhost:8080 VUS=20 DURATION=2m
 ```
 
 ## API
