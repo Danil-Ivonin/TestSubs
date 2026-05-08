@@ -1,0 +1,17 @@
+http:
+  port: "8080"
+  read_timeout: 5s
+  write_timeout: 10s
+  idle_timeout: 60s
+
+postgres:
+  host: postgres
+  port: "5432"
+  user: postgres
+  password: postgres
+  db: wallet_test
+  sslmode: disable
+
+log:
+  level: info
+  format: text
