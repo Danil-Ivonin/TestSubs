@@ -16,7 +16,7 @@ func TestRouterHealthReturnsOK(t *testing.T) {
 	t.Setenv("GIN_MODE", gin.TestMode)
 
 	logger := logrus.New()
-	router := NewRouter(logger)
+	router := NewRouter(logger, RouterOptions{})
 
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
@@ -44,7 +44,7 @@ func TestRequestLoggerWritesRequestMetadata(t *testing.T) {
 	logger.SetOutput(&logs)
 	logger.SetFormatter(&logrus.JSONFormatter{})
 
-	router := NewRouter(logger)
+	router := NewRouter(logger, RouterOptions{})
 
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
