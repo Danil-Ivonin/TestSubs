@@ -12,6 +12,8 @@ import (
 	"github.com/Danil-Ivonin/TestSubs/internal/config"
 	"github.com/Danil-Ivonin/TestSubs/internal/httpserver"
 	"github.com/Danil-Ivonin/TestSubs/internal/logger"
+	postgresdb "github.com/Danil-Ivonin/TestSubs/internal/postgres"
+	"github.com/Danil-Ivonin/TestSubs/internal/subscription"
 )
 
 func Run(ctx context.Context) error {
@@ -28,7 +30,19 @@ func Run(ctx context.Context) error {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	router := httpserver.NewRouter(log)
+	pool, err := postgresdb.NewPool(ctx, cfg.Postgres.DSN)
+	if err != nil {
+		return fmt.Errorf("connecting postgres: %w", err)
+	}
+	defer pool.Close()
+
+	subscriptionRepo := subscription.NewPostgresRepository(pool)
+	subscriptionService := subscription.NewService(subscriptionRepo)
+	subscriptionHandler := subscription.NewHandler(subscriptionService, log)
+
+	router := httpserver.NewRouter(log, httpserver.RouterOptions{
+		SubscriptionHandler: subscriptionHandler,
+	})
 	server := &http.Server{
 		Addr:         ":" + cfg.HTTP.Port,
 		Handler:      router,
