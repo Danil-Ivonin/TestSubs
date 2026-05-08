@@ -41,6 +41,16 @@ func (h *Handler) RegisterRoutes(router gin.IRouter) {
 	router.DELETE("/subscriptions/:id", h.Delete)
 }
 
+// Create godoc
+// @Summary Create subscription
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param request body CreateRequest true "Subscription payload"
+// @Success 201 {object} Response
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions [post]
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -57,6 +67,16 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 
+// Get godoc
+// @Summary Get subscription by ID
+// @Tags subscriptions
+// @Produce json
+// @Param id path string true "Subscription ID"
+// @Success 200 {object} Response
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions/{id} [get]
 func (h *Handler) Get(c *gin.Context) {
 	id, ok := h.parsePathUUID(c, "id")
 	if !ok {
@@ -72,6 +92,18 @@ func (h *Handler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// List godoc
+// @Summary List subscriptions
+// @Tags subscriptions
+// @Produce json
+// @Param user_id query string false "User ID"
+// @Param service_name query string false "Service name"
+// @Param limit query int false "Limit" minimum(1) maximum(100)
+// @Param offset query int false "Offset" minimum(0)
+// @Success 200 {array} Response
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions [get]
 func (h *Handler) List(c *gin.Context) {
 	filter, ok := h.listFilterFromQuery(c)
 	if !ok {
@@ -87,6 +119,18 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// Update godoc
+// @Summary Update subscription
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param id path string true "Subscription ID"
+// @Param request body UpdateRequest true "Subscription payload"
+// @Success 200 {object} Response
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions/{id} [put]
 func (h *Handler) Update(c *gin.Context) {
 	id, ok := h.parsePathUUID(c, "id")
 	if !ok {
@@ -108,6 +152,15 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// Delete godoc
+// @Summary Delete subscription
+// @Tags subscriptions
+// @Param id path string true "Subscription ID"
+// @Success 204
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions/{id} [delete]
 func (h *Handler) Delete(c *gin.Context) {
 	id, ok := h.parsePathUUID(c, "id")
 	if !ok {
@@ -122,6 +175,19 @@ func (h *Handler) Delete(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// Total godoc
+// @Summary Calculate subscriptions total
+// @Description Calculates total subscription cost for an inclusive month period. Date format is MM-YYYY.
+// @Tags subscriptions
+// @Produce json
+// @Param from query string true "Period start in MM-YYYY format"
+// @Param to query string true "Period end in MM-YYYY format"
+// @Param user_id query string false "User ID"
+// @Param service_name query string false "Service name"
+// @Success 200 {object} TotalResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /subscriptions/total [get]
 func (h *Handler) Total(c *gin.Context) {
 	req := TotalRequest{
 		From:        c.Query("from"),

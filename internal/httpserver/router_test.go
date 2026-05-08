@@ -62,3 +62,18 @@ func TestRequestLoggerWritesRequestMetadata(t *testing.T) {
 		t.Fatalf("log line %q does not contain status", line)
 	}
 }
+
+func TestRouterRegistersSwaggerRoute(t *testing.T) {
+	t.Setenv("GIN_MODE", gin.TestMode)
+
+	logger := logrus.New()
+	router := NewRouter(logger, RouterOptions{})
+
+	for _, route := range router.Routes() {
+		if route.Method == http.MethodGet && route.Path == "/swagger/*any" {
+			return
+		}
+	}
+
+	t.Fatal("GET /swagger/*any route is not registered")
+}
